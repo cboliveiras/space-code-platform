@@ -1,11 +1,12 @@
 Rails.application.routes.draw do
   namespace :v1 do
     resources :pilots, only: [:index, :show, :create] do
-      resources :travels, only: [:index]
-
-      post 'grant_credits', to: 'pilots#grant_credits', on: :member
-      post 'travel_between_planets', to: 'travels#travel_between_planets', on: :member
-      post 'register_fuel_refill', to: 'travels#register_fuel_refill', on: :member
+      member do
+        get 'travels', to: 'travels#index'
+        post 'grant_credits', to: 'pilots#grant_credits'
+        post 'travel_between_planets', to: 'travels#travel_between_planets'
+        post 'register_fuel_refill', to: 'travels#register_fuel_refill'
+      end
 
       resources :ships, only: [:index, :create]
     end
