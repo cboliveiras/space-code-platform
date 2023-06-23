@@ -16,7 +16,7 @@ module V1
       if service.perform_travel
         render json: { message: 'Travel successful!' }, status: :ok
       else
-        render json: { error: 'Insufficient fuel for the journey. Please refuel' }, status: :unprocessable_entity
+        render json: { errors: service.errors }, status: :unprocessable_entity
       end
     end
 
@@ -26,15 +26,16 @@ module V1
       if service.refill?
         render json: { message: 'Fuel refill successful!' }, status: :ok
       else
-        render json: { error: 'Cannot refill. Check the credits or the fuel ship capacity' },
-               status: :unprocessable_entity
+        render json: { errors: service.errors }, status: :unprocessable_entity
       end
     end
 
     private
 
     def set_pilot
-      @pilot = Pilot.find_by(id: params[:pilot_id])
+      @pilot = Pilot.find_by(id: params[:id])
+
+      render json: { error: 'Pilot not found' }, status: :not_found unless @pilot
     end
   end
 end

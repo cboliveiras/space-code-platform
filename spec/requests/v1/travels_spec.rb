@@ -3,9 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'V1::Travels', type: :request do
+  let!(:pilot) { create(:pilot) }
+
   describe 'GET /v1/pilots/:pilot_id/travels' do
-    let(:pilot) { create(:pilot) }
-    let!(:travels) { create_list(:travel, 3, ship: create(:ship, pilot: pilot)) }
+    let!(:ship) { create(:ship, pilot: pilot) }
+    let!(:travels) { create_list(:travel, 3, ship: ship) }
 
     it 'returns a list of travels' do
       get "/v1/pilots/#{pilot.id}/travels"
@@ -17,7 +19,6 @@ RSpec.describe 'V1::Travels', type: :request do
   end
 
   describe 'POST /v1/pilots/:pilot_id/travel_between_planets' do
-    let(:pilot) { create(:pilot) }
     let(:to_planet) { 'Demeter' }
 
     context 'when the travel is successful' do
@@ -48,7 +49,6 @@ RSpec.describe 'V1::Travels', type: :request do
   end
 
   describe 'POST /v1/pilots/:pilot_id/register_fuel_refill' do
-    let(:pilot) { create(:pilot) }
     let(:to_planet) { 'Demeter' }
 
     context 'when the fuel refill is successful' do
@@ -64,14 +64,17 @@ RSpec.describe 'V1::Travels', type: :request do
     end
 
     context 'when the fuel refill is not possible' do
-      before { allow_any_instance_of(FuelRefillService).to receive(:refill?).and_return(false) }
+      before do
+        allow_any_instance_of(FuelRefillService).to receive(:refill?).and_return(false)
+        allow_any_instance_of(FuelRefillService).to receive(:errors).and_return(['Insufficient credits'])
+      end
 
       it 'returns an error message' do
         post "/v1/pilots/#{pilot.id}/register_fuel_refill", params: { to_planet: to_planet }
         expect(response).to have_http_status(:unprocessable_entity)
 
         response_body = JSON.parse(response.body)
-        expect(response_body).to eq({ 'error' => 'Cannot refill. Check the credits or the fuel ship capacity' })
+        expect(response_body).to eq({ 'errors' => ['Insufficient credits'] })
       end
     end
   end

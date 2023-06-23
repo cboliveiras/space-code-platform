@@ -2,7 +2,7 @@
 
 module V1
   class PilotsController < ApplicationController
-    before_action :set_pilot, only: [:grant_credits]
+    before_action :set_pilot, only: [:show, :grant_credits]
 
     def index
       @pilots = Pilot.all
@@ -11,8 +11,6 @@ module V1
     end
 
     def show
-      @pilot = Pilot.find(params[:id])
-
       render json: @pilot, status: :ok
     end
 
@@ -32,7 +30,7 @@ module V1
       if service.grant_credits?
         render json: { message: 'Yes, you did it! Credits granted!' }, status: :ok
       else
-        render json: { error: 'Invalid contract fulfillment.' }, status: :unprocessable_entity
+        render json: { errors: service.errors }, status: :unprocessable_entity
       end
     end
 

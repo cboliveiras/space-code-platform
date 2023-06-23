@@ -28,7 +28,7 @@ class ContractAcceptanceService
   private
 
   def validate_contract_status
-    @errors << "Contract is not in the 'OPEN' status" unless @contract.open?
+    @errors << 'Contract has not an OPEN status' unless @contract.open?
   end
 
   def validate_ship_existence

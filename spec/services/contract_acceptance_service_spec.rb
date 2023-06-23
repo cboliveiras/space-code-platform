@@ -29,7 +29,7 @@ RSpec.describe ContractAcceptanceService, type: :service do
         expect(contract).to receive(:open?).and_return(false)
 
         expect(subject.accept).to be_falsy
-        expect(subject.errors).to include("Contract is not in the 'OPEN' status")
+        expect(subject.errors).to include('Contract has not an OPEN status')
       end
     end
 

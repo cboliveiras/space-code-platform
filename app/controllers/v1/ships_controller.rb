@@ -3,7 +3,7 @@
 module V1
   class ShipsController < ApplicationController
     def index
-      @ship = Ship.find_by(pilot_id: params[:pilot_id])
+      @ship = Ship.where(pilot_id: params[:pilot_id]).last
 
       render json: @ship, status: :ok
     end

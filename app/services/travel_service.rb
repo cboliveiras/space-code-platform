@@ -5,12 +5,11 @@ class TravelService
 
   def initialize(pilot, to_planet)
     @pilot = pilot
-    @ship = @pilot.ship if @pilot
+    @ship = @pilot&.ship
     @to_planet = to_planet
   end
 
   def perform_travel
-    binding.pry
     return false unless @pilot && @ship
 
     fuel_consumption = FuelCalculationService.new.calculate_fuel_consumption(@pilot.location, to_planet)

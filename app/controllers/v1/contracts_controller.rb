@@ -3,7 +3,7 @@
 module V1
   class ContractsController < ApplicationController
     before_action :set_contract, only: [:show, :update, :accept_contract]
-    before_action :open_contracts, only: [:list_open_contracts, :accept_contract]
+    before_action :open_contracts, only: [:list_open_contracts]
 
     def index
       @contracts = Contract.all
@@ -34,8 +34,6 @@ module V1
     end
 
     def list_open_contracts
-      return render json: [], status: :not_found unless @open_contracts
-
       render json: @open_contracts
     end
 
@@ -55,6 +53,8 @@ module V1
 
     def open_contracts
       @open_contracts = Contract.where(status: 'OPEN')
+
+      return render json: [], status: :not_found unless @open_contracts
     end
 
     def set_contract
