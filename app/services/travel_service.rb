@@ -2,15 +2,18 @@
 
 class TravelService
   attr_reader :pilot, :to_planet
+  attr_accessor :errors
 
   def initialize(pilot, to_planet)
     @pilot = pilot
     @ship = @pilot&.ship
     @to_planet = to_planet
+    @errors = []
   end
 
   def perform_travel
-    return false unless @pilot && @ship
+    return false unless pilot_has_ship?
+    return false if pilot_already_at_destination?
 
     fuel_consumption = FuelCalculationService.new.calculate_fuel_consumption(@pilot.location, to_planet)
 
@@ -25,8 +28,18 @@ class TravelService
 
   private
 
+  def pilot_already_at_destination?
+    validate_pilot_destination = @pilot.location == to_planet
+    @errors << 'Pilot already at destination' if validate_pilot_destination
+
+    validate_pilot_destination
+  end
+
   def ship_has_enough_fuel?(fuel_consumption)
-    @ship.fuel_level >= fuel_consumption
+    validate_fuel_quantity = @ship.fuel_level >= fuel_consumption
+    @errors << 'Insufficient fuel. Please refuel.' unless validate_fuel_quantity
+
+    validate_fuel_quantity
   end
 
   def update_pilot_location(to_planet)
@@ -36,5 +49,13 @@ class TravelService
   def decrement_ship_fuel_level(fuel_consumption)
     @ship.decrement(:fuel_level, fuel_consumption)
     @ship.save!
+  end
+
+  def pilot_has_ship?
+    validate_pilot_has_ship = @pilot.ship.present?
+
+    @errors << 'Pilot has no ship' unless validate_pilot_has_ship
+
+    validate_pilot_has_ship
   end
 end

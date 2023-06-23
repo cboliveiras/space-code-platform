@@ -5,7 +5,7 @@ FactoryBot.define do
     fuel_capacity { 150 }
     fuel_level { 85 }
     weight_capacity { 30 }
-    association :pilot
+    association :pilot, strategy: :build
 
     trait :with_contract do
       after(:create) do |ship|

@@ -10,8 +10,6 @@ FactoryBot.define do
       fuel_consumption { nil }
     end
 
-    trait :with_ship  do
-      ship
-    end
+    association :ship, strategy: :build
   end
 end

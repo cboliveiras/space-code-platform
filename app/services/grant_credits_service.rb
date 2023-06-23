@@ -12,14 +12,18 @@ class GrantCreditsService
   end
 
   def grant_credits?
-    return false unless @pilot && @ship
-
+    return false unless pilot_has_ship?
     return false unless valid_contract? && !pilot_awarded?
 
-    grant_credits_to_pilot
-    update_travel_pilot
-    update_contract_status
-    @errors.empty?
+    if @errors.empty?
+      grant_credits_to_pilot
+      update_travel_pilot
+      update_contract_status
+
+      true
+    else
+      false
+    end
   end
 
   private
@@ -43,9 +47,17 @@ class GrantCreditsService
   def pilot_awarded?
     validate_pilot_awards = @travel.ship_id == @pilot.ship&.id
 
-    @errors << 'Pilot already awarded for this travel' unless validate_pilot_awards
+    @errors << 'Pilot already awarded for this travel' if validate_pilot_awards
 
     validate_pilot_awards
+  end
+
+  def pilot_has_ship?
+    validate_pilot_has_ship = @pilot.ship.present?
+
+    @errors << 'Pilot has no ship' unless validate_pilot_has_ship
+
+    validate_pilot_has_ship
   end
 
   def update_travel_pilot

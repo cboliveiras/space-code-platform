@@ -3,15 +3,33 @@
 require 'rails_helper'
 
 RSpec.describe FuelRefillService do
-  let(:pilot) { create(:pilot, credits: 500) }
-  let!(:ship) { create(:ship, pilot: pilot) }
+  let!(:pilot) { create(:pilot) }
+  let!(:ship) { create(:ship, fuel_capacity: 5, pilot: pilot) }
   let(:to_planet) { 'Demeter' }
   let(:service) { described_class.new(pilot, to_planet) }
-  let(:fuel_calculation_service) { instance_double(FuelCalculationService) }
 
   describe '#refill?' do
-    context 'when the ship does not have enough fuel or the pilot does not have enough credits' do
-      let!(:ship) { create(:ship, fuel_level: 0, pilot: pilot) }
+    context 'when the ship does not have fuel_capacity and the pilot does not have enough credits' do
+
+      it 'returns false' do
+        expect(service.refill?).to eq(false)
+      end
+
+      it 'does not update the pilot credits' do
+        expect { service.refill? }.to_not change { pilot.reload.credits }
+      end
+
+      it 'does not update the ship fuel level' do
+        expect { service.refill? }.to_not change { ship.reload.fuel_level }
+      end
+
+      it 'does not create a fuel refill record' do
+        expect { service.refill? }.to change { FuelRefill.count }.by(0)
+      end
+    end
+
+    context 'when the ship has fuel_capacity and the pilot has enough credits' do
+      before { ship.update(fuel_level: 40) }
 
       it 'returns true' do
         expect(service.refill?).to eq(true)
@@ -25,26 +43,8 @@ RSpec.describe FuelRefillService do
         expect { service.refill? }.to change { ship.reload.fuel_level }
       end
 
-      it 'creates a fuel refill record' do
+      it 'reates a fuel refill record' do
         expect { service.refill? }.to change { FuelRefill.count }.by(1)
-      end
-    end
-
-    context 'when the ship has enough fuel or the pilot has enough credits' do
-      it 'returns false' do
-        expect(service.refill?).to eq(false)
-      end
-
-      it 'does not update the pilot credits' do
-        expect { service.refill? }.to_not change { pilot.reload.credits }
-      end
-
-      it 'updates the ship fuel level' do
-        expect { service.refill? }.to_not change { ship.reload.fuel_level }
-      end
-
-      it 'does not creates a fuel refill record' do
-        expect { service.refill? }.to change { FuelRefill.count }.by(0)
       end
     end
 

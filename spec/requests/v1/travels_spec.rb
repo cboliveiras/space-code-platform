@@ -36,6 +36,7 @@ RSpec.describe 'V1::Travels', type: :request do
     context 'when there is insufficient fuel for the journey' do
       before do
         allow_any_instance_of(TravelService).to receive(:perform_travel).and_return(false)
+        allow_any_instance_of(TravelService).to receive(:errors).and_return(['Insufficient fuel. Please refuel'])
       end
 
       it 'returns an error message' do
@@ -43,7 +44,7 @@ RSpec.describe 'V1::Travels', type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
 
         response_body = JSON.parse(response.body)
-        expect(response_body).to eq({ 'error' => 'Insufficient fuel for the journey. Please refuel' })
+        expect(response_body).to eq({ 'errors' => ['Insufficient fuel. Please refuel'] })
       end
     end
   end

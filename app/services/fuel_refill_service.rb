@@ -12,22 +12,26 @@ class FuelRefillService
   end
 
   def refill?
-    return false unless @ship && @pilot
+    return false unless pilot_has_ship?
+    return false if !has_fuel_capacity? && !has_enough_credits?
+    return false unless need_additional_fuel?
 
-    return false unless has_fuel_capacity? && has_enough_credits?
-
-    cost = calculate_cost
-
-    return false unless cost.positive?
-
-    @pilot.update(credits: @pilot.credits - cost)
+    @pilot.update(credits: @pilot.credits - calculate_cost)
     @ship.update(fuel_level: @ship.fuel_level + required_fuel)
-    FuelRefill.create(pilot_id: @pilot.id, fuel: required_fuel, cost: cost)
+    FuelRefill.create(pilot_id: @pilot.id, fuel: required_fuel, cost: calculate_cost)
 
     true
   end
 
   private
+
+  def pilot_has_ship?
+    validate_pilot_has_ship = @pilot.ship.present?
+
+    @errors << 'Pilot has no ship' unless validate_pilot_has_ship
+
+    validate_pilot_has_ship
+  end
 
   def required_fuel
     required_fuel = fuel_calculation_service.calculate_fuel_consumption(@pilot.location, @to_planet) - @ship.fuel_level
@@ -37,11 +41,19 @@ class FuelRefillService
     required_fuel
   end
 
+  def need_additional_fuel?
+    validate_fuel_required = required_fuel > 0
+
+    @errors << 'Ship has enough fuel to travel' if required_fuel <= 0
+
+    validate_fuel_required
+  end
+
   def has_fuel_capacity?
     fuel_to_travel = fuel_calculation_service.calculate_fuel_consumption(@pilot.location, @to_planet)
     validate_fuel_capacity = (@ship.fuel_level + required_fuel) <= @ship.fuel_capacity
 
-    @errors << 'Ship cannot handle the fuel' unless validate_fuel_capacity
+    @errors << 'Ship cannot handle the necessary fuel' unless validate_fuel_capacity
 
     validate_fuel_capacity
   end

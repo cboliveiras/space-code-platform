@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe GrantCreditsService do
   describe '#grant_credits?' do
-    let!(:ship) { create(:ship, weight_capacity: 100) }
-    let!(:pilot) { create(:pilot, credits: 100, ship: ship) }
+    let!(:pilot) { create(:pilot, credits: 100) }
+    let!(:ship) { create(:ship, weight_capacity: 100, pilot: pilot) }
     let!(:contract) { create(:contract, :taken, :with_ship) }
 
     context 'when the contract is fulfilled' do
