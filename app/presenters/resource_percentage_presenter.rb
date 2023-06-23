@@ -2,16 +2,14 @@
 
 class ResourcePercentagePresenter
   def generate_resource_percentage_report
-    ships = Ship.all
-    pilots_ids = ships.pluck(:pilot_id)
-    pilots = Pilot.where(id: pilots_ids)
-
-    # Pq não funciona usando Pilot.where.not(ship: nil)?
+    ships = Ship.all.includes(:contracts, :pilot)
 
     report_data = {}
 
-    pilots.each do |pilot|
-      resource_percentages = calculate_resource_percentage(pilot)
+    ships.each do |ship|
+      pilot = ship.pilot
+      resource_percentages = calculate_resource_percentage(ship)
+
       next if resource_percentages.empty?
 
       report_data[pilot.name] = resource_percentages
@@ -22,13 +20,13 @@ class ResourcePercentagePresenter
 
   private
 
-  def calculate_resource_percentage(pilot)
-    total_resource_weight = pilot.ship.contracts.finished.map { |c| c.resources.pluck(:weight).sum }.sum
+  def calculate_resource_percentage(ship)
+    total_resource_weight = ship.contracts.finished.map { |c| c.resources.pluck(:weight).sum }.sum
 
     resource_percentages = {}
-    pilot.ship.contracts.each do |contract|
+    ship.contracts.each do |contract|
       contract.resources.each do |resource|
-        resource_percentages[resource.name] = 0
+        resource_percentages[resource.name] ||= 0
         resource_percentages[resource.name] += ((resource.weight / total_resource_weight) * 100).round(1)
       end
     end

@@ -25,7 +25,7 @@ class ResourceWeightsPresenter
   private
 
   def add_resource_weight(resource_weights, resource)
-    resource_weights[resource.name] = 0
+    resource_weights[resource.name] ||= 0
     resource_weights[resource.name] += resource.weight
   end
 end

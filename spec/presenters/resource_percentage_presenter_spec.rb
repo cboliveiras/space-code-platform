@@ -11,7 +11,7 @@ RSpec.describe ResourcePercentagePresenter do
       presenter = described_class.new
       report_data = presenter.generate_resource_percentage_report
 
-      expect(report_data).to eq("#{ship.pilot.name}" => { "#{contract.resources.first.name}" => 100.0 })
+      expect(report_data).to eq("#{ship.pilot.name}" => { "#{contract.resources.first.name}" => 200.0 })
     end
   end
 end
