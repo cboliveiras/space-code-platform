@@ -1,0 +1,19 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  username: postgres
+  password: password
+  pool: 5
+  username: postgres
+  password: password
+  host: db
+  port: 5432
+
+development:
+  <<: *default
+  database: space-code-platform_development
+
+test:
+  <<: *default
+  database: space-code-platform_test
