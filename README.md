@@ -56,15 +56,37 @@ To set up the Space Code Platform locally, follow these steps:
 
 ```bundle install```
 
-5. Set up the database:
+5. The database.yml file is originally configured to use Docker. If you want to run the application locally, you have to update to:
+
+```
+default: &default
+  adapter: postgresql
+  encoding: unicode
+
+development:
+  <<: *default
+  database: space-code-platform_development
+
+test:
+  <<: *default
+  database: space-code-platform_test
+```
+
+Or just comment lines 4-9.
+
+6. Set up the database:
 
 ```rails db:create db:migrate db:seed```
 
-6. Start the Rails server:
+7. Start the Rails server:
 
 ```rails s```
 
-7. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
+8. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
+
+9. Run all tests:
+
+```rspec spec```
 
 ## API Documentation
 
