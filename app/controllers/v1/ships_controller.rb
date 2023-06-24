@@ -5,7 +5,11 @@ module V1
     def index
       @ship = Ship.where(pilot_id: params[:pilot_id]).last
 
-      render json: @ship, status: :ok
+      if @ship
+        render json: @ship, status: :ok
+      else
+        render json: { error: 'This pilot has no ship' }, status: :not_found
+      end
     end
 
     def create

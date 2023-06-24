@@ -12,8 +12,9 @@ class GrantCreditsService
   end
 
   def grant_credits?
-    return false unless pilot_has_ship?
-    return false unless valid_contract? && !pilot_awarded?
+    return false unless pilot_has_ship? && same_route?
+    return false unless !pilot_awarded?
+    return false if contract_already_finished?
 
     if @errors.empty?
       grant_credits_to_pilot
@@ -28,10 +29,10 @@ class GrantCreditsService
 
   private
 
-  def valid_contract?
-    validate_contract = same_route? && !@contract.finished?
+  def contract_already_finished?
+    validate_contract = @contract.finished?
 
-    @errors << 'Invalid contract' unless validate_contract
+    @errors << 'Contract already finished' if validate_contract
 
     validate_contract
   end

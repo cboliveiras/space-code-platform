@@ -2,7 +2,7 @@
 
 module V1
   class TravelsController < ApplicationController
-    before_action :set_pilot, only: [:index, :travel_between_planets, :register_fuel_refill]
+    before_action :set_pilot, only: %i[index travel_between_planets register_fuel_refill]
 
     def index
       @travels = Travel.where(ship: @pilot.ship)
@@ -11,6 +11,11 @@ module V1
     end
 
     def travel_between_planets
+      unless params[:to_planet]
+        return render json: { error: 'Missing parameter: to_planet' },
+                      status: :unprocessable_entity
+      end
+
       service = TravelService.new(@pilot, params[:to_planet])
 
       if service.perform_travel

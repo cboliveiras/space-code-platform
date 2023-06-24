@@ -6,15 +6,15 @@ class FuelRefillService
 
   def initialize(pilot, to_planet)
     @pilot = pilot
-    @ship = @pilot&.ship
+    @ship = Ship.where(pilot: @pilot).last
     @to_planet = to_planet
     @errors = []
   end
 
   def refill?
-    return false unless pilot_has_ship?
-    return false if !has_fuel_capacity? && !has_enough_credits?
-    return false unless need_additional_fuel?
+    binding.pry
+    return false unless pilot_has_ship? && need_additional_fuel?
+    return false unless has_fuel_capacity? && has_enough_credits?
 
     @pilot.update(credits: @pilot.credits - calculate_cost)
     @ship.update(fuel_level: @ship.fuel_level + required_fuel)
