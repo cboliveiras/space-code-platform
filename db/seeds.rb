@@ -2,6 +2,26 @@
 
 # Seed data for pilots
 
+def generate_valid_certification
+  loop do
+    certification = FFaker::Number.number(digits: 7).to_s
+    next unless luhn_validation(certification)
+
+    return certification.insert(6, '-')
+  end
+end
+
+def luhn_validation(certification)
+  digits = certification.scan(/\d/).map(&:to_i)
+  checksum = 0
+
+  digits.reverse.each_with_index do |digit, index|
+    checksum += index.even? ? digit : (digit * 2).divmod(10).sum if index < 15
+  end
+
+  (checksum % 10).zero?
+end
+
 location = %w[Andvari Demeter Aqua Calas].sample
 credits = rand(500..1000)
 
@@ -9,7 +29,7 @@ credits = rand(500..1000)
   Pilot.create!(
     name: FFaker::Name.name,
     age: rand(18..50),
-    certification: FFaker::Lorem.characters(7),
+    certification: generate_valid_certification,
     credits:,
     location:
   )
@@ -17,26 +37,21 @@ end
 
 # Seed data for ships
 
-fuel_capacity = rand(100..200)
-fuel_level = rand(0..fuel_capacity)
-weight_capacity = rand(1000..2000)
-
 10.times do
-  Ship.create!(fuel_capacity:, fuel_level:, weight_capacity:,
-               pilot_id: rand(1..10))
-end
+  fuel_capacity = rand(50..100)
+  fuel_level = rand(0..fuel_capacity)
+  weight_capacity = rand(1000..2000)
+  pilot_id = (1..10).to_a.sample
 
-# Seed data for fuel_refills
-5.times do
-  FuelRefill.create!(fuel: rand(10..20), cost: rand(100..200), pilot_id: rand(1..10))
+  Ship.create!(fuel_capacity:, fuel_level:, weight_capacity:, pilot_id: pilot_id)
 end
 
 # Seed for resources
 
 resources = [
-  { name: 'minerals', weight: 13 },
+  { name: 'minerals', weight: 45 },
   { name: 'water', weight: 30 },
-  { name: 'food', weight: 23 }
+  { name: 'food', weight: 80 }
 ]
 
 resources.each do |resource|
@@ -146,5 +161,6 @@ travels = [
 ].freeze
 
 travels.each do |travel|
-  Travel.create!(travel)
+  ship_id = travel[:ship_id] if travel[:ship_id].present?
+  Travel.create!(travel.merge(ship_id: ship_id))
 end
