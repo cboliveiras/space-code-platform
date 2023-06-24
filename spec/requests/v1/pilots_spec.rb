@@ -35,7 +35,7 @@ RSpec.describe 'Pilots API', type: :request do
             name: 'Jane Doe',
             age: 25,
             credits: 100,
-            certification: '1234567',
+            certification: '205979-8',
             location: 'Andvari'
           }
         }

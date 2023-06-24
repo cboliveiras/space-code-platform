@@ -14,4 +14,26 @@ RSpec.describe Pilot, type: :model do
     it { should have_one(:ship) }
     it { should have_many(:fuel_refills) }
   end
+
+  describe '#luhn_validation' do
+    let(:pilot) { Pilot.new(certification: certification) }
+
+    context 'when certification is valid' do
+      let(:certification) { '305504-3' }
+
+      it 'does not add any errors' do
+        pilot.valid?
+        expect(pilot.errors[:certification]).to be_empty
+      end
+    end
+
+    context 'when certification is invalid' do
+      let(:certification) { '123456-8' }
+
+      it 'adds an error to certification' do
+        pilot.valid?
+        expect(pilot.errors[:certification]).to include('is invalid')
+      end
+    end
+  end
 end
