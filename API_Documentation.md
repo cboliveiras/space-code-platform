@@ -1,6 +1,5 @@
 # API Documentation
 
-
 Headers
   - Accept: application/json
   - Content-Type: application/json
@@ -17,7 +16,8 @@ Headers
   "certification": "ABC123",
   "credits": 1000,
   "location": "Andvari"
-  }
+  },
+  ...
 ]
 
 ### GET /v1/pilots/:id
@@ -61,7 +61,11 @@ Headers
 
 - Response (422 Unprocessable Entity)
 
-{ "error": "Invalid data" }
+{
+  "location": ["can't be blank"],
+  "certification": ["has already been taken"],
+  "credits": ["must be greater than or equal to 0"]
+}
 
 ### GET /v1/pilots/:pilot_id/ships
 
@@ -74,6 +78,10 @@ Headers
   "weight_capacity": 1087.0,
   "pilot_id": 2,
 }
+
+- Response (404 Not Found)
+
+{ "error": "This pilot has no ship" }
 
 ### POST /v1/pilots/:pilot_id/ships
 
@@ -96,9 +104,34 @@ Headers
   "pilot_id": 1,
 }
 
-- Response (400 Bad Request)
+- Response (422 Unprocessable Entity)
 
-{ "error": "Invalid data" }
+{
+  "pilot": ["must exist"],
+  "fuel_level": ["must be greater than or equal to 0"]
+}
+
+### GET /v1/pilots/:id/travels
+
+- Response (200 OK)
+
+[
+  {
+    "id": 10,
+    "from_planet": "Calas",
+    "to_planet": "Andvari",
+    "fuel_consumption": 20,
+    "ship_id": 1,
+  },
+  {
+     "id": 13,
+      "from_planet": "Andvari",
+      "to_planet": "Demeter",
+      "fuel_consumption": 43,
+      "ship_id": null,
+  },
+  ...
+]
 
 ### POST /v1/pilots/:id/grant_credits
 
@@ -115,7 +148,9 @@ Headers
 
 - Response (422 Unprocessable Entity):
 
-{  "error": "Invalid contract fulfillment." }
+{
+  "errors": ["Pilot already awarded for this travel"]
+}
 
 ### POST /v1/pilots/:id/travel_between_planets
 
@@ -131,7 +166,13 @@ Headers
 
 - Response (422 Unprocessable Entity):
 
-{  "error": "Insufficient fuel for the journey. Please refuel" }
+{
+  "errors":
+    [
+      "Pilot already at destination",
+      "It is not possible to calculate fuel consumption without location parameters"
+    ]
+}
 
 ### POST /v1/pilots/:id/register_fuel_refill
 
@@ -147,7 +188,13 @@ Payload:
 
 - Response (422 Unprocessable Entity):
 
-{  "error": "Cannot refill. Check the credits or the fuel ship capacity" }
+{
+  "errors":
+    [
+      "Ship has enough fuel to travel",
+      "It is not possible to calculate fuel consumption without location parameters"
+    ]
+}
 
 ### GET /v1/contracts
 
@@ -158,9 +205,9 @@ Payload:
     "description": "Water to Demeter",
     "from_planet": "Andvari",
     "to_planet": "Demeter",
-    "value": 2817.0,
-    "status": "open",
-    "ship_id": null,
+    "value": 2568.0,
+    "status": "finished",
+    "ship_id": 1,
     },
   {
      "id": 2,
@@ -235,7 +282,10 @@ Payload:
 
 - Response (422 Unprocessable Entity):
 
-{  "error": "Invalid entry" }
+{
+  "errors":
+    "ship_id": ["can't be blank"],
+}
 
 ### GET /v1/contracts/list_open_contracts
 
@@ -250,14 +300,7 @@ Payload:
     "value": 2000,
     "status": "OPEN"
   },
-  {
-    "id": 2,
-    "description": "Food to Aqua",
-    "from_planet": "Andvari",
-    "to_planet": "Aqua",
-    "value": 1500,
-    "status": "OPEN"
-  }
+  ...
 ]
 
 ### POST /v1/contracts/:id/accept_contract
@@ -275,7 +318,12 @@ Payload:
 
 - Response (422 Unprocessable Entity):
 
-{  "error": "Contract is not in the 'OPEN' status" }
+{
+  "errors": [
+      "Contract has not an OPEN status",
+      "Ship not found"
+  ]
+}
 
 ### GET /v1/reports/resource_weights
 
@@ -305,16 +353,27 @@ Payload:
 ### GET /v1/reports/resource_percentage
 
 - Response (200 OK):
-
 {
-  "John Doe": {
-    "water": 60,
-    "food": 30,
-    "minerals": 10
+  "Jaleesa Jenkins": {
+    "minerals": 14.6,
+    "water": 33.7,
+    "food": 51.6
   },
-  "Jane Smith": {
-    "water": 40,
-    "minerals": 60
+  "Hettie Upton": {
+    "food": 43.4,
+    "water": 56.6
+  },
+  "Rayna Turcotte": {
+    "food": 78.0,
+    "minerals": 22.0
+  },
+  "Shari Fritsch": {
+    "water": 85.4,
+    "food": 9.3,
+    "minerals": 5.3
+  },
+  "Faustina Lynch": {
+    "minerals": 100.0
   }
 }
 
