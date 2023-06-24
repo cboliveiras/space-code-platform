@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe FuelRefillService do
   let!(:pilot) { create(:pilot) }
-  let!(:ship) { create(:ship, fuel_capacity: 5, pilot: pilot) }
+  let!(:ship) { create(:ship, fuel_capacity: 50, pilot: pilot) }
   let(:to_planet) { 'Demeter' }
   let(:service) { described_class.new(pilot, to_planet) }
 

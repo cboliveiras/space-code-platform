@@ -12,7 +12,6 @@ class FuelRefillService
   end
 
   def refill?
-    binding.pry
     return false unless pilot_has_ship? && need_additional_fuel?
     return false unless has_fuel_capacity? && has_enough_credits?
 
