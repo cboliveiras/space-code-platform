@@ -5,6 +5,7 @@ class Ship < ApplicationRecord
   has_many :contracts
   has_many :travels
 
+  validates :pilot_id, uniqueness: true
   validates :fuel_capacity, :fuel_level, :weight_capacity, numericality: { greater_than_or_equal_to: 0 }
 
   def can_handle_weight?(weight)

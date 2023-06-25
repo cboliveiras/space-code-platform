@@ -23,27 +23,23 @@ def luhn_validation(certification)
 end
 
 location = %w[Andvari Demeter Aqua Calas].sample
-credits = rand(500..1000)
+fuel_capacity = rand(50..100)
 
 10.times do
-  Pilot.create!(
+  pilot = Pilot.create!(
     name: FFaker::Name.name,
     age: rand(18..50),
     certification: generate_valid_certification,
-    credits:,
-    location:
+    credits: rand(500..1000),
+    location: location
   )
-end
 
-# Seed data for ships
-
-10.times do
-  fuel_capacity = rand(50..100)
-  fuel_level = rand(0..fuel_capacity)
-  weight_capacity = rand(1000..2000)
-  pilot_id = (1..10).to_a.sample
-
-  Ship.create!(fuel_capacity:, fuel_level:, weight_capacity:, pilot_id: pilot_id)
+  Ship.create!(
+    fuel_capacity: rand(50..100),
+    fuel_level: rand(0..fuel_capacity),
+    weight_capacity: rand(100..200),
+    pilot: pilot
+  )
 end
 
 # Seed for resources

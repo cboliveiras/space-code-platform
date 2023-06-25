@@ -6,7 +6,7 @@ class FuelRefillService
 
   def initialize(pilot, to_planet)
     @pilot = pilot
-    @ship = Ship.where(pilot: @pilot).last
+    @ship = Ship.find_by(pilot: @pilot)
     @to_planet = to_planet
     @errors = []
   end
