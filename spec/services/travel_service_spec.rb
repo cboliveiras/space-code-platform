@@ -20,6 +20,10 @@ RSpec.describe TravelService do
         expect(service.perform_travel).to eq(true)
       end
 
+      it 'creates a travel record' do
+        expect { service.perform_travel }.to change { Travel.count }.by(1)
+      end
+
       it 'updates the pilot location' do
         expect { service.perform_travel }.to change { pilot.reload.location }.from('Andvari').to(to_planet)
       end

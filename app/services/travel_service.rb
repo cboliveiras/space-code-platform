@@ -18,6 +18,7 @@ class TravelService
     fuel_consumption = FuelCalculationService.new.calculate_fuel_consumption(@pilot.location, to_planet)
 
     if ship_has_enough_fuel?(fuel_consumption)
+      create_travel_record(fuel_consumption)
       update_pilot_location(to_planet)
       decrement_ship_fuel_level(fuel_consumption)
       true
@@ -57,5 +58,9 @@ class TravelService
     @errors << 'Pilot has no ship' unless validate_pilot_has_ship
 
     validate_pilot_has_ship
+  end
+
+  def create_travel_record(fuel_consumption)
+    Travel.create!(ship_id: @ship.id, from_planet: @pilot.location, to_planet:, fuel_consumption:)
   end
 end
