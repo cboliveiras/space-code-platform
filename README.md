@@ -1,6 +1,7 @@
 # Space Code Platform
 
-Welcome to the Space Code Platform! This platform allows you to manage space travel contracts, pilots, ships, and more. You can set up the platform either with Docker or locally. Choose the method that suits your preferences and requirements.
+Welcome to the Space Code Platform! This platform allows you to manage space travel contracts, pilots, ships, and more.
+You can set up the platform either with Docker or locally. Choose the method that suits your preferences and requirements.
 
 ## Set Up with Docker
 
@@ -12,29 +13,31 @@ To set up the Space Code Platform using Docker, follow these steps:
 
 ```git clone git@github.com:cboliveiras/space-code-platform.git```
 
-3. Navigate to the project directory:
+3. If you don't have access to the Github repository, download the .zip file and proceed to step 4.
+
+4. Navigate to the project directory:
 
 ```cd space-code-platform```
 
-4. Build the Docker image:
+5. Build the Docker image:
 
 ```docker-compose build```
 
-5. Run the Docker container:
+6. Run the Docker container:
 
 ```docker-compose up```
 
-6. Create the database, run the migrations and create the seeds:
+7. Create the database, run the migrations and create the seeds:
 
 ```docker-compose run web rake db:drop db:create db:migrate db:seed```
 
-7. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
+8. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
 
-8. Run the tests:
+9. Run the tests:
 
 ```docker-compose run web rake spec PGUSER=postgres RAILS_ENV=test```
 
-9. If you want, open a bash session inside the container:
+10. If you want, open a bash session inside the container:
 
 ```docker exec -it space-code-platform_web_1 bash```
 
@@ -48,15 +51,17 @@ To set up the Space Code Platform locally, follow these steps:
 
 ```git clone git@github.com:cboliveiras/space-code-platform.git```
 
-3. Navigate to the project directory:
+3. If you don't have access to the Github Repository, download the .zip file and proceed to step 4.
+
+4. Navigate to the project directory:
 
 ```cd space-code-platform```
 
-4. Install the required gems:
+5. Install the required gems:
 
 ```bundle install```
 
-5. The database.yml file is originally configured to use Docker. If you want to run the application locally, you have to update to:
+6. The database.yml file is originally configured to use Docker. If you want to run the application locally, you have to update to:
 
 ```
 default: &default
@@ -74,17 +79,17 @@ test:
 
 Or just comment lines 4-9.
 
-6. Set up the database:
+7. Set up the database:
 
 ```rails db:create db:migrate db:seed```
 
-7. Start the Rails server:
+8. Start the Rails server:
 
 ```rails s```
 
-8. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
+9. The Space Code Platform should now be accessible at [http://localhost:3000](http://localhost:3000)
 
-9. Run all tests:
+10. Run all tests:
 
 ```rspec spec```
 
