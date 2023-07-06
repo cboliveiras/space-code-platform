@@ -104,4 +104,4 @@ Test the endpoints on [Postman](https://cboliveiras.postman.co/workspace/New-Tea
 You can also find the Postman documentation [here](https://documenter.getpostman.com/view/18541010/2s93z5AkVA)
 
 
-### Have fun! I hope to see you soon :-)
+### Have fun!
